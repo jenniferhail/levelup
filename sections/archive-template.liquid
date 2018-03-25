@@ -1,0 +1,172 @@
+{%- assign blog = blogs[section.settings.blog] -%}
+{%- assign max_height = 345 -%}
+
+<div data-section-id="{{ section.id }}" data-section-type="collection-template">
+
+  <header class="collection-header">
+
+  </header>
+
+  <div id="archive" class="archive_blog text-center">
+  {% unless blog.articles_count == 0 %}
+
+    {%- assign grid_item_width = 'small--one-half medium-up--one-third' -%}
+
+    <div class="section-header text-center">
+      <h2>Favorites</h2>
+    </div>
+
+    <div class="archive-post-grid grid grid--uniform{% if collection.products_count > 0 %} grid--view-items{% endif %}">
+      {% for article in blog.articles %}
+        {% for tag in article.tags %}
+          {% if tag.handle == 'favorites' %}
+
+            <div class="archive-post__item grid__item grid__item--{{section.id}} {{ grid_item_width }}">
+              {% if article.image %}
+                {% capture img_id %}ArticleImage-{{ article.image.id }}{% endcapture %}
+                {% capture img_wrapper_id %}ArticleImageWrapper-{{ article.image.id }}{% endcapture %}
+                {%- assign img_url = article.image | img_url: '345x345', crop: 'center' -%}
+
+                <div id="{{ img_wrapper_id }}" class="article__grid-image-wrapper js">
+                  <a href="{{ article.url }}" class="article__grid-image-container" style="padding-top:100%;">
+                    <img id="{{ img_id }}"
+                         class="article__grid-image lazyload"
+                         src="{{ article.image | img_url: '345x345', crop: 'center' }}"
+                         data-src="{{ img_url }}"
+                         data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                         data-sizes="auto"
+                         alt="{{ article.image.alt | escape }}">
+                    <div class="article__grid-image-hover">
+                      <div class="btn btn--secondary btn--small">
+                        {{ 'blogs.article.read_more' | t }}
+                      </div>
+                    </div>
+                  </a>
+                </div>
+                <noscript>
+                  <a href="{{ article.url }}" class="article__grid-image-wrapper">
+                    {{ article | img_url: '345x345', scale: 2, crop: 'center' | img_tag: article.title, 'article__grid-image' }}
+                  </a>
+                </noscript>
+              {% endif %}
+
+              <div class="grid grid--no-gutters article__grid-meta">
+                <div class="grid__item text-center">
+                  {% if section.settings.show_category %}
+                    {% if article.tags.size > 0 %}
+                      <div class="article__tags article__tags--list">
+                        {{ 'blogs.article.posted_in' | t }}
+                        {% for tag in article.tags %}
+                          {% unless tag.handle == 'favorites' %}
+                            <a href="{{ blog.url }}/tagged/{{ tag | handle }}">{{ tag }}</a>{% comment %}{% unless forloop.last %}, {% endunless %}{% endcomment %}
+                            {% endunless %}
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+                  {% endif %}
+                  <div class="profile__title">
+                    <a href="{{ article.url }}">{{ article.title }}</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          {% endif%}
+        {% endfor %}
+      {% endfor %}
+    </div>
+
+    {% for group_tag in blog.all_tags %}
+
+      {% unless group_tag.handle == 'favorites' %}
+
+        <div class="section-header text-center">
+          <h2>{{ group_tag }}</h2>
+        </div>
+
+        <div class="archive-post-grid grid grid--uniform{% if collection.products_count > 0 %} grid--view-items{% endif %}">
+          {% for article in blog.articles %}
+            {% if article.tags contains group_tag %}
+
+              <div class="archive-post__item grid__item grid__item--{{section.id}} {{ grid_item_width }}">
+                {% if article.image %}
+                  {% capture img_id %}ArticleImage-{{ article.image.id }}{% endcapture %}
+                  {% capture img_wrapper_id %}ArticleImageWrapper-{{ article.image.id }}{% endcapture %}
+                  {%- assign img_url = article.image | img_url: '345x345', crop: 'center' -%}
+
+                  <div id="{{ img_wrapper_id }}" class="article__grid-image-wrapper js">
+                    <a href="{{ article.url }}" class="article__grid-image-container" style="padding-top:100%;">
+                      <img id="{{ img_id }}"
+                           class="article__grid-image lazyload"
+                           src="{{ article.image | img_url: '345x345', crop: 'center' }}"
+                           data-src="{{ img_url }}"
+                           data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                           data-sizes="auto"
+                           alt="{{ article.image.alt | escape }}">
+                      <div class="article__grid-image-hover">
+                        <div class="btn btn--secondary btn--small">
+                          {{ 'blogs.article.read_more' | t }}
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+                  <noscript>
+                    <a href="{{ article.url }}" class="article__grid-image-wrapper">
+                      {{ article | img_url: '345x345', scale: 2, crop: 'center' | img_tag: article.title, 'article__grid-image' }}
+                    </a>
+                  </noscript>
+                {% endif %}
+
+                <div class="grid grid--no-gutters article__grid-meta">
+                  <div class="grid__item text-center">
+                    {% if section.settings.show_category %}
+                      {% if article.tags.size > 0 %}
+                        <div class="article__tags article__tags--list">
+                          {{ 'blogs.article.posted_in' | t }}
+                          {% for tag in article.tags %}
+                            {% unless tag.handle == 'favorites' %}
+                              <a href="{{ blog.url }}/tagged/{{ tag | handle }}">{{ tag }}</a>{% comment %}{% unless forloop.last %}, {% endunless %}{% endcomment %}
+                              {% endunless %}
+                          {% endfor %}
+                        </div>
+                      {% endif %}
+                    {% endif %}
+                    <div class="profile__title">
+                      <a href="{{ article.url }}">{{ article.title }}</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            {% endif %}
+          {% endfor %}
+        </div>
+
+      {% endunless %}
+
+    {% endfor %}
+
+  {% endunless %}
+  </div>
+
+</div>
+
+
+{% schema %}
+  {
+    "name": "Archive page",
+    "settings": [
+      {
+        "id": "blog",
+        "type": "blog",
+        "label": "Blog"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_category",
+        "label": "Show category",
+        "default": false
+      }
+    ]
+  }
+{% endschema %}

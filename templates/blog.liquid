@@ -1,0 +1,21 @@
+{% comment %}
+  The contents of the blog.liquid template can be found in /sections/blog-template.liquid
+{% endcomment %}
+
+<div class="page-width">
+
+	<div class="grid">
+
+	    <div class="grid__item blog-mobile__sidebar large-up--hide">
+	      {% section 'sidebar-blog-mobile' %}
+	    </div>
+	    <div class="grid__item blog__sidebar small--hide medium--hide large-up--three-twelfths">
+	      {% section 'sidebar-blog' %}
+	    </div>
+	    <div class="grid__item large-up--eight-twelfths large-up--push-one-twelfth">
+	      {% section 'blog-template' %}
+		</div>
+
+	</div>
+
+</div>

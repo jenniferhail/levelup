@@ -1,0 +1,62 @@
+{% if section.settings.page_show_title %}
+  <h1>{{ section.settings.new_page_title }}</h1>
+{% else %}
+  <h1>{{ 'general.404.title' | t }}</h1>
+{% endif %}
+
+{% if section.settings.page_show_text %}
+  <p>{{ section.settings.new_page_text }}</p>
+{% else %}
+  <p>{{ 'general.404.subtext' | t }}</p>
+{% endif %}
+
+{% if section.settings.page_show_btn %}
+  <p>
+    <a href="/" class="btn btn--has-icon-after">{{ section.settings.new_page_btn }}{% include 'icon-arrow-right' %}</a>
+  </p>
+{% else %}
+  <p>
+    <a href="/" class="btn btn--has-icon-after">{{ 'general.404.link' | t }}{% include 'icon-arrow-right' %}</a>
+  </p>
+{% endif %}
+
+{% schema %}
+  {
+    "name": "Page Content",
+    "settings": [
+      {
+        "id": "page_show_title",
+        "type": "checkbox",
+        "label": "Show page title",
+        "default": false
+      },
+      {
+        "type": "text",
+        "id": "new_page_title",
+        "label": "Page Title"
+      },
+      {
+        "id": "page_show_text",
+        "type": "checkbox",
+        "label": "Show page text",
+        "default": false
+      },
+      {
+        "type": "textarea",
+        "id": "new_page_text",
+        "label": "Page Text"
+      },
+      {
+        "id": "page_show_btn",
+        "type": "checkbox",
+        "label": "Show button",
+        "default": false
+      },
+      {
+        "type": "text",
+        "id": "new_page_btn",
+        "label": "Page Button"
+      }
+    ]
+  }
+{% endschema %}

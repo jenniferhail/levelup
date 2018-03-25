@@ -1,0 +1,87 @@
+{%- assign blog = blogs[block.settings.team_blog] -%}
+{%- assign filter = block.settings.team_blog_filter | handleize -%}
+<div class="team_blog text-center">
+
+  {% unless blog.articles_count == 0 %}
+      <div class="section-header text-center">
+        <h2>{{ filter }}</h2>
+      </div>
+      <div class="blog-post-grid grid grid--uniform">
+        {% for article in blog.articles %}
+          {% for tag in article.tags %}
+            {% if tag.handle == filter %}
+              <div class="blog-post__item grid__item one-whole medium--one-half large-up--one-third text-center">
+                {% if article.image %}
+                  {% capture img_id %}ArticleImage-{{ article.image.id }}{% endcapture %}
+                  {% capture img_wrapper_id %}ArticleImageWrapper-{{ article.image.id }}{% endcapture %}
+                  {%- assign img_url = article.image | img_url: '345x345', crop: 'center' -%}
+
+                  <div id="{{ img_wrapper_id }}" class="article__grid-image-wrapper js">
+                    <a href="{{ article.url }}" class="article__grid-image-container" style="padding-top:100%;">
+                      <img id="{{ img_id }}"
+                           class="article__grid-image lazyload"
+                           src="{{ article.image | img_url: '345x345', crop: 'center' }}"
+                           data-src="{{ img_url }}"
+                           data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                           data-sizes="auto"
+                           alt="{{ article.image.alt | escape }}">
+                      <div class="article__grid-image-hover">
+                        <div class="btn btn--secondary btn--small">
+                          {% assign name = article.title | split: ' ' %}
+                          Meet
+                          {% for first in name %}
+                            {% if forloop.first == true %}
+                              {{ first }}
+                            {% endif %}
+                          {% endfor %}
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+                  <noscript>
+                    <a href="{{ article.url }}" class="article__grid-image-wrapper">
+                      {{ article | img_url: '345x345', scale: 2, crop: 'center' | img_tag: article.title, 'article__grid-image' }}
+                    </a>
+                  </noscript>
+                {% endif %}
+
+                <div class="grid grid--no-gutters article__grid-meta">
+                  <div class="grid__item three-fifths text-left">
+                    <span class="profile__title">
+                      <a href="{{ article.url }}">{{ article.title }}</a>
+                    </span>
+
+                    <div class="rte profile__subtitle article__grid-excerpt">
+                      {% if article.excerpt.size > 0 %}
+                        {{ article.excerpt }}
+                      {% else %}
+                        {{ article.content | strip_html }}
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div class="grid__item two-fifths text-right">
+                    {% if article.metafields.c_f.website_link %}
+                      <a class="team-icons__link" href="{{ article.metafields.c_f.website_link | escape }}" title="{{ article.title }}'s Website">
+                        {% include 'icon-link' %}
+                      </a>
+                    {% endif %}
+                    {% if settings.article.metafields.c_f.facebook_link %}
+                      <a class="team-icons__link" href="{{ article.metafields.c_f.facebook_link | escape }}" title="{{ article.title }}'s Facebook">
+                        {% include 'icon-facebook' %}
+                      </a>
+                    {% endif %}
+                    {% if article.metafields.c_f.instagram_link %}
+                      <a class="team-icons__link" href="{{ article.metafields.c_f.instagram_link | escape }}" title="{{ article.title }}'s Instagram">
+                        {% include 'icon-instagram' %}
+                      </a>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+      </div>
+  {% endunless %}
+
+</div>

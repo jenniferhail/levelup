@@ -1,0 +1,14 @@
+<div class="page-width rich-text">
+  <div class="grid">
+    <div class="grid__item {% unless section.settings.full_width %} medium--four-fifths medium--push-one-tenth large-up--one-half large-up--push-one-quarter{% endunless %}">
+      {% if block.settings.contentHeading != blank %}
+        <div class="text-center">
+          <h2 class="h3">{{ block.settings.contentHeading | escape }}</h2>
+        </div>
+      {% endif %}
+      {% if block.settings.content != blank %}
+        <div class="rte rte-setting text-justify">{{ block.settings.content }}</div>
+      {% endif %}
+    </div>
+  </div>
+</div>

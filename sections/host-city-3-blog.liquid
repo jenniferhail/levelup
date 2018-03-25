@@ -1,0 +1,33 @@
+{% if section.settings.host_blog_filter != blank %}
+
+  <div class="page-width">
+
+    <div class="grid-item">
+
+      {% include 'snippet_host_grid_3' %}
+
+    </div>
+
+  </div>
+
+{% endif %}
+
+{% schema %}
+  {
+    "name": "City Three Hosts",
+    "class": "page-section",
+    "settings": [
+      {
+        "id": "host_blog",
+        "type": "blog",
+        "label": "Blog"
+      },
+      {
+        "type": "text",
+        "id": "host_blog_filter",
+        "label": "Filter by tag"
+      }
+    ]
+  }
+
+{% endschema %}

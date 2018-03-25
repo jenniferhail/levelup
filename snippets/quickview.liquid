@@ -1,0 +1,143 @@
+<div id="quickview-{{ product.id }}" class="quickview" style="display: none;" >
+  <div class="grid grid--uniform">
+
+  {%- assign current_variant = product.selected_or_first_available_variant -%}
+
+    <div class="grid__item medium-up--one-half grid-view-item__title">
+      <div id="{{ wrapper_id }}" class="grid-view-item__image-wrapper js">
+        <div style="padding-top:100%;">
+          <a href="{{ product.url | within: collection }}">
+          <img id="{{ img_id }}"
+               class="grid-view-item__image lazyload"
+               src="{{ product.featured_image | img_url: '300x300', crop: 'center' }}"
+               data-src="{{ img_url }}"
+               data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+               data-aspectratio="{{ product.featured_image.aspect_ratio }}"
+               data-sizes="auto"
+               alt="{{ product.featured_image.alt | escape }}">
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid__item medium-up--one-half grid-view-item__title">
+
+      <a href="{{ product.url | within: collection }}"><h1 itemprop="name" class="product-single__title">{{ product.title }}</h1></a>
+
+      {% if product.tags.size > 0 %}
+        <div class="product__tags product__tags--list rte">
+          {% for tag in product.tags %}
+            <a href="{{ blog.url }}/tagged/{{ tag | handle }}"><h3>{{ tag }}</h3></a>{% unless forloop.last %}, {% endunless %}
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {% if section.settings.show_vendor %}
+        <p itemprop="brand" class="product-single__vendor">{{ product.vendor }}</p>
+      {% endif %}
+
+      <div class="quickview-price">
+        {% include 'product-price' %}
+      </div>
+
+      <div class="product-single__description rte" itemprop="description">
+        {{ product.description }}
+      </div>
+
+      {% comment %}Waitlist Form{% endcomment %}
+
+      {% unless product.available %}
+        <div id="quickview-sold-out">
+          {% form 'contact' %}
+            {% if form.posted_successfully? %}
+            <p class="accent-text">{{ section.settings.waitlist_form_thankyou }}</p>
+            {% else %}
+            <h6>{{ section.settings.waitlist_form_text }}</h6>
+            {% endif %}
+            {% if form.errors %}
+            <div class="error feedback accent-text">
+              <p>Please provide a valid email address.</p>
+            </div>
+            {% endif %}
+            {% unless form.posted_successfully? %}
+            <div id="notify-me-wrapper" class="clearfix">
+              <div class="input-group">
+                <input type="hidden" name="contact[body]" value="Please notify me when {{ product.title | escape }} becomes available." />
+                {% if customer %}
+                  <input type="hidden" name="contact[email]" value="{{ customer.email }}" />
+                {% else %}
+                  <input type="email" name="contact[email]" class="input-group__field styled-input{% if form.errors contains 'email' %} error{% endif %}" value="{{ contact.fields.email }}" placeholder="your@email.com" required="required" />
+                {% endif %}
+                <span class="input-group__btn">
+                  <button type="submit" class="btn newsletter__submit" name="commit" id="Subscribe" value="Send">
+                    <span class="newsletter__submit-text--large">{{ 'general.newsletter_form.submit' | t }}</span>
+                  </button>
+                </span>
+              </div>
+            </div>
+            {% endunless %}
+          {% endform %}
+        </div>
+      {% endunless %}
+
+      <div class="full-description">
+        <a href="{{ product.url | within: collection }}">View full description &#10230;</a>
+      </div>
+
+      <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+        <meta itemprop="priceCurrency" content="{{ shop.currency }}">
+
+        <link itemprop="availability" href="http://schema.org/{% if product.available %}InStock{% else %}OutOfStock{% endif %}">
+
+
+
+        <form action="/cart/add" method="post" enctype="multipart/form-data" class="product-form product-form-{{ section.id }}{% unless section.settings.show_variant_labels %} product-form--hide-variant-labels{% endunless %}" data-section="{{ section.id }}">
+          {% unless product.options.size == 1 and product.variants[0].title == 'Default Title' %}
+            {% for option in product.options_with_values %}
+              <div class="selector-wrapper js product-form__item">
+                <label {% if option.name == 'default' %}class="label--hidden" {% endif %}for="SingleOptionSelector-{{ forloop.index0 }}">
+                  {{ option.name }}
+                </label>
+                <select class="single-option-selector single-option-selector-{{ section.id }} product-form__input" id="SingleOptionSelector-{{ forloop.index0 }}" data-index="option{{ forloop.index }}">
+                  {% for value in option.values %}
+                    <option value="{{ value | escape }}"{% if option.selected_value == value %} selected="selected"{% endif %}>{{ value }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            {% endfor %}
+          {% endunless %}
+
+          <select name="id" id="ProductSelect-{{ section.id }}" data-section="{{ section.id }}" class="product-form__variants no-js">
+            {% for variant in product.variants %}
+              {% if variant.available %}
+                <option {% if variant == product.selected_or_first_available_variant %} selected="selected" {% endif %} value="{{ variant.id }}">
+                  {{ variant.title }}
+                </option>
+              {% else %}
+                <option disabled="disabled">{{ variant.title }} - {{ 'products.product.sold_out' | t }}</option>
+              {% endif %}
+            {% endfor %}
+          </select>
+
+          {% if product.available %}
+            {% include 'booking-form' %}
+          {% endif %}
+
+          {% if section.settings.show_quantity_selector %}
+            <div class="product-form__item product-form__item--quantity">
+              <label for="Quantity">{{ 'products.product.quantity' | t }}</label>
+              <input type="number" id="Quantity" name="quantity" value="1" min="1" class="product-form__input" pattern="[0-9]*">
+            </div>
+          {% endif %}
+
+          <div class="product-form__item product-form__item--submit">
+            <button type="submit" name="add" id="AddToCart-{{ section.id }}" {% unless current_variant.available %}disabled="disabled"{% endunless %} class="btn product-form__cart-submit{% if product.options.size == 1 and product.variants[0].title == 'Default Title' %} product-form__cart-submit--small{% endif %}"><span>{{ 'products.product.add_to_cart' | t }}</span></button>
+          </div>
+        </form>
+
+      </div>
+
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,17 @@
+<div class="page-width form-section">
+  <div class="grid">
+    <div class="grid__item {% unless section.settings.full_width %} medium--four-fifths medium--push-one-tenth large-up--one-half large-up--push-one-quarter{% endunless %}">
+      {% if block.settings.formHeading != blank %}
+        <div class="text-center">
+          <h2 class="h3">{{ block.settings.formHeading | escape }}</h2>
+        </div>
+      {% endif %}
+      {% if block.settings.formContent != blank %}
+        <div class="rte-setting text-justify">{{ block.settings.formContent }}</div>
+      {% endif %}
+      {% if block.settings.formCode != blank %}
+        {{ block.settings.formCode }}
+      {% endif %}
+    </div>
+  </div>
+</div>

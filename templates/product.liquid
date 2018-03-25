@@ -1,0 +1,30 @@
+{% comment %}
+  The contents of the product.liquid template can be found in /sections/product-template.liquid
+{% endcomment %}
+
+<div class="page-width">
+
+	<div class="grid small-reverse">
+
+    <div class="grid__item shop__sidebar large-up--two-twelfths small--hide medium--hide">
+  		{% section 'sidebar-shop' %}
+    </div>
+
+    <div class="grid__item large-up--ten-twelfths">
+  		{% section 'product-template' %}
+    </div>
+
+	</div>
+
+</div>
+
+<script>
+  // Override default values of shop.strings for each template.
+  // Alternate product templates can change values of
+  // add to cart button, sold out, and unavailable states here.
+  theme.productStrings = {
+    addToCart: {{ 'products.product.add_to_cart' | t | json }},
+    soldOut: {{ 'products.product.sold_out' | t | json }},
+    unavailable: {{ 'products.product.unavailable' | t | json }}
+  }
+</script>

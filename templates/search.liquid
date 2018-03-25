@@ -1,0 +1,154 @@
+{% paginate search.results by 15 %}
+
+<div class="page-width">
+  {% if search.results_count == 0 or search.performed == false %}
+    <div class="empty-page-content text-center">
+      <h1 class="h2">{{ 'general.search.title' | t }}</h1>
+  {% else %}
+    <div class="section-header text-center">
+      <h1 class="h2">{{ 'general.search.results_with_count' | t: terms: search.terms, count: search.results_count }}</h1>
+  {% endif %}
+    <div class="grid">
+      <div class="grid__item medium-up--two-fifths medium-up--push-three-tenths">
+        <form action="/search" method="get" role="search" class="search">
+          <div class="input-group">
+            <input type="search"
+              id="SearchInput"
+              class="input-group__field search__input"
+              name="q"
+              value="{{ search.terms | escape }}"
+              placeholder="{{ 'general.search.placeholder' | t }}"
+              aria-label="{{ 'general.search.placeholder' | t }}"
+              autofocus>
+            <span class="input-group__btn">
+              <button class="btn search__submit" type="submit">{{ 'general.search.submit' | t }}</button>
+            </span>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    {% if search.performed and search.results_count == 0 %}
+      <hr class="hr--small hr--invisible">
+      <p>{{ 'general.search.no_results_html' | t: terms: search.terms }}</p>
+    {% endif %}
+  </div>
+</div>
+
+
+{% if search.performed %}
+  {% if search.results_count > 0 %}
+    <hr class="hr--small hr--invisible">
+  {% endif %}
+  <div class="page-width list-view-items">
+    <div class="grid">
+      {% for item in search.results %}
+        <div class="grid__item small--one-half medium-up--one-third">
+          {% comment %}<a href="{{ item.url }}" class="list-view-item">{% endcomment %}
+            {% if item.object_type == 'product' %}
+
+                {% capture img_id %}ProductCardImage-{{ section.id }}-{{ item.id }}{% endcapture %}
+                {% capture wrapper_id %}ProductCardImageWrapper-{{ section.id }}-{{ item.id }}{% endcapture %}
+                {%- assign img_url = item.featured_image | img_url: '300x300', crop: 'center' -%}
+
+                <div id="{{ img_wrapper_id }}" class="article__grid-image-wrapper js">
+                  <a href="{{ item.url }}" class="article__grid-image-container">
+                    <img id="{{ img_id }}"
+                         class="grid-view-item__image lazyload"
+                         src="{{ item.featured_image | img_url: '300x300', crop: 'center' }}"
+                         data-src="{{ img_url }}"
+                         data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                         data-aspectratio="{{ item.featured_image.aspect_ratio }}"
+                         data-sizes="auto"
+                         alt="{{ item.featured_image.alt | escape }}">
+                    <div class="article__grid-image-hover">
+                      <div class="btn btn--secondary btn--small">
+                        View Class
+                      </div>
+                    </div>
+                  </a>
+                </div>
+
+                <noscript>
+                  {% capture image_size %}{{ max_height }}x{{ max_height }}{% endcapture %}
+                  <img class="grid-view-item__image" src="{{ item.featured_image.src | img_url: image_size, scale: 2 }}" alt="{{ item.featured_image.alt }}" style="max-width: {{ max_height | times: item.featured_image.aspect_ratio }}px;">
+                </noscript>
+
+                <div class="grid grid--no-gutters article__grid-meta">
+                  <div class="grid__item text-center">
+                    {% if item.tags.size > 0 %}
+                      <div class="article__tags article__tags--list rte">
+                        {{ 'blogs.article.posted_in' | t }}
+                        {% for tag in item.tags %}
+                          {% unless tag.handle == 'favorites' %}
+                            <a href="{{ blog.url }}/tagged/{{ tag | handle }}">{{ tag }}</a>{% unless forloop.last %}, {% endunless %}
+                            {% endunless %}
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+                    <div class="profile__title">
+                      <a href="{{ item.url }}">{{ item.title }}</a>
+                    </div>
+                  </div>
+                </div>
+
+            {% else %}
+              {% if item.image %}
+
+                {% capture img_id %}ArticleImage-{{ item.image.id }}{% endcapture %}
+                {% capture img_wrapper_id %}ArticleImageWrapper-{{ item.image.id }}{% endcapture %}
+                {%- assign img_url = item.image | img_url: '345x345', crop: 'center' -%}
+
+                <div id="{{ img_wrapper_id }}" class="article__grid-image-wrapper js">
+                  <a href="{{ item.url }}" class="article__grid-image-container" style="padding-top:100%;">
+                    <img id="{{ img_id }}"
+                         class="article__grid-image lazyload"
+                         src="{{ item.image | img_url: '345x345', crop: 'center' }}"
+                         data-src="{{ img_url }}"
+                         data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                         data-sizes="auto"
+                         alt="{{ item.image.alt | escape }}">
+                    <div class="article__grid-image-hover">
+                      <div class="btn btn--secondary btn--small">
+                        {{ 'blogs.article.read_more' | t }}
+                      </div>
+                    </div>
+                  </a>
+                </div>
+                <noscript>
+                  <a href="{{ item.url }}" class="article__grid-image-wrapper">
+                    {{ item | img_url: '345x345', scale: 2, crop: 'center' | img_tag: item.title, 'article__grid-image' }}
+                  </a>
+                </noscript>
+
+              {% endif %}
+
+                <div class="grid grid--no-gutters article__grid-meta">
+                  <div class="grid__item text-center">
+                    {% if item.tags.size > 0 %}
+                      <div class="article__tags article__tags--list rte">
+                        {{ 'blogs.article.posted_in' | t }}
+                        {% for tag in item.tags %}
+                          {% unless tag.handle == 'favorites' %}
+                            <a href="{{ blog.url }}/tagged/{{ tag | handle }}">{{ tag }}</a>{% unless forloop.last %}, {% endunless %}
+                            {% endunless %}
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+                    <div class="profile__title">
+                      <a href="{{ item.url }}">{{ item.title }}</a>
+                    </div>
+                  </div>
+                </div>
+            {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {% if paginate.pages > 1 %}
+    {% include 'pagination' %}
+  {% endif %}
+{% endif %}
+
+{% endpaginate %}

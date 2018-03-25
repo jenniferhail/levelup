@@ -1,0 +1,116 @@
+<ul class="site-nav list--inline {{ nav_alignment }}" id="SiteNav">
+  {% for link in linklists[section.settings.main_linklist].links %}
+    {% comment %}
+      Check if third-level nav exists on each parent link.
+    {% endcomment %}
+    {%- assign three_level_nav = false -%}
+    {%- assign child_list_handle = link.title | handleize -%}
+
+    {% if linklists[child_list_handle].links != blank %}
+      {% for childlink in linklists[child_list_handle].links %}
+        {% assign grand_child_list_handle = childlink.title | handleize %}
+        {% if linklists[grand_child_list_handle].links != blank %}
+          {%- assign three_level_nav = true -%}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+
+    {% if linklists[child_list_handle].links != blank %}
+      <li class="site-nav--has-dropdown site-nav--has-centered-dropdown{% if link.active %} site-nav--active{% endif %}" aria-has-popup="true" aria-controls="SiteNavLabel-{{ child_list_handle }}">
+        <a href="{{ link.url }}" class="site-nav__link site-nav__link--main">
+          {{ link.title }}
+          {% comment %}{% include 'icon-chevron-down' %}{% endcomment %}
+          {% comment %}<span class="visually-hidden">{{ 'layout.navigation.expand' | t }}</span>{% endcomment %}
+        </a>
+
+        <div class="site-nav__dropdown site-nav__dropdown--centered" id="SiteNavLabel-{{ child_list_handle }}" aria-expanded="false">
+          {% if three_level_nav %}
+            <div class="site-nav__childlist">
+              <div class="site-nav__childlist-grid">
+                {% if linklists[child_list_handle].links != blank %}
+                  {% for childlink in linklists[child_list_handle].links %}
+                    {% assign grand_child_list_handle = childlink.title | handle %}
+
+                    <div class="site-nav__childlist-item">
+                      {% if childlink.url contains '/products' %}
+                        {% assign featured = childlink.title %}
+                        {% for product in collections.all.all_products %}
+                          {%- assign img_url = product.featured_image | img_url: '350x225', crop: 'center' -%}
+                          {% if product.title == featured %}
+                            <div class="text-center featured-class-link-wrapper">
+                              <a href="{{ childlink.url }}" class="site-nav__link site-nav__child-link">
+                                <img id="{{ img_id }}"
+                                   class="grid-view-item__image lazyload"
+                                   src="{{ img_url }}"
+                                   data-src="{{ img_url }}"
+                                   data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                                   data-aspectratio="{{ product.featured_image.aspect_ratio }}"
+                                   data-sizes="auto"
+                                   alt="{{ product.featured_image.alt | escape }}">
+                             </a>
+                              <span class="featured-class-link-heading">NEW</span>
+                              <div class="featured-class-link"><a href="{{ childlink.url }}" class="site-nav__link site-nav__child-link">{{ product.title }}</a></div>
+                            </div>
+                          {% endif %}
+                        {% endfor %}
+                      {% elsif childlink.url contains '/blogs/blog/' %}
+                        {% assign post = childlink.title %}
+                        {%- assign blog = blogs['blog'] -%}
+                        {% for article in blog.articles %}
+                          {%- assign img_url = article.image | img_url: '350x225', crop: 'center' -%}
+                          {% if article.title == post %}
+                            <div class="text-center featured-class-link-wrapper">
+                              <a href="{{ childlink.url }}" class="site-nav__link site-nav__child-link">
+                                <img id="{{ img_id }}"
+                                   class="grid-view-item__image lazyload"
+                                   src="{{ img_url }}"
+                                   data-src="{{ img_url }}"
+                                   data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                                   data-aspectratio="{{ product.featured_image.aspect_ratio }}"
+                                   data-sizes="auto"
+                                   alt="{{ article.featured_image.alt | escape }}">
+                             </a>
+                              <span class="featured-class-link-heading">FEATURED</span>
+                              <div class="featured-class-link"><a href="{{ childlink.url }}" class="site-nav__link site-nav__child-link">{{ article.title }}</a></div>
+                            </div>
+                          {% endif %}
+                        {% endfor %}
+                      {% else %}
+                        <a href="{{ childlink.url }}" class="site-nav__link site-nav__child-link site-nav__child-link--parent">{{ childlink.title | escape }}</a>
+                      {% endif %}
+                      {% for grandchildlink in linklists[grand_child_list_handle].links %}
+                        <ul>
+                          <li>
+                            <a href="{{ grandchildlink.url }}" class="site-nav__link site-nav__child-link">{{ grandchildlink.title | escape }}</a>
+                          </li>
+                        </ul>
+                      {% endfor %}
+                    </div>
+                  {% endfor %}
+                {% endif %}
+              </div>
+            </div>
+          {% else %}
+            <div class="site-nav__childlist">
+              <div class="site-nav__childlist-grid">
+                <div class="site-nav__childlist-item">
+                  <ul>
+                    {% for childlink in linklists[child_list_handle].links %}
+                      <li {% if childlink.active %}class="site-nav--active"{% endif %}>
+                        <a href="{{ childlink.url }}" class="site-nav__link site-nav__child-link{% if forloop.last %} site-nav__link--last{% endif %}">{{ childlink.title | escape }}</a>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      </li>
+    {% else %}
+      <li {% if link.active %}class="site-nav--active"{% endif %}>
+        <a href="{{ link.url }}" class="site-nav__link site-nav__link--main">{{ link.title }}</a>
+      </li>
+    {% endif %}
+  {% endfor %}
+</ul>

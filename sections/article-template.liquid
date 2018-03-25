@@ -1,0 +1,100 @@
+<div class="section-header text-center">
+
+  {% if section.settings.blog_show_date %}
+    <span class="article__date">
+      {{ article.published_at | time_tag: format: 'month_day_year' }}
+    </span>
+  {% endif %}
+
+  {% if article.tags.size > 0 %}
+    <div class="article__tags article__tags--list">
+      {{ 'blogs.article.posted_in' | t }}
+      {% for tag in article.tags %}
+      {% unless tag.handle == 'favorites' %}
+          <a href="{{ blog.url }}/tagged/{{ tag | handle }}">{{ tag }}</a>{% unless forloop.last %}, {% endunless %}
+      {% endunless %}
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <h1 class="article__title">{{ article.title }}</h1>
+</div>
+
+<div class="rte" itemprop="articleBody">
+  {{ article.content }}
+</div>
+
+{% if section.settings.blog_show_author %}
+  <hr class="hr--invisible">
+  <hr>
+  <div class="grid">
+    {% if article.user.image %}
+      <div class="grid__item text-center medium-up--text-left medium-up--one-third">
+        <img src="{{ article.user.image | img_url: '300x300', crop: 'center' }}">
+      </div>
+    {% endif %}
+    <div class="grid__item{% if article.user.image %} text-center medium-up--text-left medium-up--two-thirds{% else %} one-whole text-center{% endif %}">
+      <span class="article__author">Written by {% if article.user.homepage %}<a href="{{ article.user.homepage }}">{% endif %}{{ article.author }}{% if article.user.homepage %}</a>{% endif %}</span>
+      {% if article.user.bio %}<p>{{ article.user.bio }}</p>{% endif %}
+    </div>
+  </div>
+{% endif %}
+
+{% if section.settings.show_share_buttons %}
+  <div class="text-center">
+    {% include 'social-sharing', share_title: article.title, share_permalink: article.url, share_image: article.image %}
+  </div>
+{% endif %}
+
+{% if section.settings.show_similar_posts %}
+  <div class="related-posts">
+    <hr class="hr--small">
+    <h6 class="related-title">Similar Posts You Might Like</h6>
+    {% assign currentHandle = article.handle %}
+    {% assign articlesFound = 0 %}
+    <div id="related-posts" class="grid align--center">
+      {% for addin in blogs[blog.handle].articles %}
+        {% unless addin.handle == currentHandle %}
+          <div class="grid__item one-third">
+            {% if addin.image %}<a href="{{ addin.url }}"><img src="{{ addin | img_url: 'large', crop: 'center' }}"></a>{% endif %}
+            <a class="related-article-title" href="{{ addin.url }}">{{ addin.title }}</a>
+          </div>
+         {% assign articlesFound = articlesFound |plus: 1 %}
+         {% if articlesFound == 3 %}{% break %}{% endif %}
+        {% endunless %}
+      {% endfor %}
+    </div>
+  </div>
+{% endif %}
+
+{% schema %}
+  {
+    "name": "Posts",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "blog_show_author",
+        "label": "Show author",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "blog_show_date",
+        "label": "Show date",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_similar_posts",
+        "label": "Show similar posts",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_share_buttons",
+        "label": "Show social sharing buttons",
+        "default": true
+      }
+    ]
+  }
+{% endschema %}

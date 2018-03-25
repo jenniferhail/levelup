@@ -1,0 +1,96 @@
+{%- assign blog = blogs[section.settings.host_blog] -%}
+{%- assign filter = section.settings.host_blog_filter | handleize -%}
+<div class="team_blog text-center">
+
+  {% unless blog.articles_count == 0 %}
+
+    <div class="section-header text-center">
+      <h2>{{ filter }} Faves</h2>
+    </div>
+    <div class="blog-post-grid grid grid--uniform">
+      {% for article in blog.articles %}
+        {% for tag in article.tags %}
+          {% if tag.handle == filter %}
+            <div class="blog-post__item grid__item medium--one-half large-up--one-third text-center">
+              {% if article.image %}
+                {% capture img_id %}ArticleImage-{{ article.image.id }}{% endcapture %}
+                {% capture img_wrapper_id %}ArticleImageWrapper-{{ article.image.id }}{% endcapture %}
+                {%- assign img_url = article.image | img_url: '345x345', crop: 'center' -%}
+
+                <div id="{{ img_wrapper_id }}" class="article__grid-image-wrapper js">
+                  {% comment %}<a href="{{ article.url }}" class="article__grid-image-container" style="padding-top:100%;">{% endcomment %}
+
+                  {% if article.metafields.c_f.website_link %}
+                    <a href="{{ article.metafields.c_f.website_link | escape }}" target="_blank" class="article__grid-image-container" style="padding-top:100%;" title="{{ article.title }}'s Website">
+                  {% else %}
+                    <div class="article__grid-image-container" style="padding-top:100%;">
+                  {% endif %}
+
+                    <img id="{{ img_id }}"
+                         class="article__grid-image lazyload"
+                         src="{{ article.image | img_url: '345x345', crop: 'center' }}"
+                         data-src="{{ img_url }}"
+                         data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                         data-sizes="auto"
+                         alt="{{ article.image.alt | escape }}">
+                    <div class="article__grid-image-hover">
+                      <div class="btn btn--secondary btn--small">
+                        Visit
+                      </div>
+                    </div>
+
+                  {% if article.metafields.c_f.website_link %}
+                    </a>
+                  {% else %}
+                    </div>
+                  {% endif %}
+                  {% comment %}</a>{% endcomment %}
+                </div>
+                <noscript>
+                  {% comment %}<a href="{{ article.url }}" class="article__grid-image-wrapper">{% endcomment %}
+                    {{ article | img_url: '345x345', scale: 2, crop: 'center' | img_tag: article.title, 'article__grid-image' }}
+                  {% comment %}</a>{% endcomment %}
+                </noscript>
+              {% endif %}
+
+              <div class="grid grid--no-gutters">
+                <div class="grid__item three-fifths text-left">
+                  <span class="profile__title">
+                    {% comment %}<a href="{{ article.url }}">{% endcomment %}{{ article.title }}{% comment %}</a>{% endcomment %}
+                  </span>
+
+                  <div class="rte article__grid-excerpt">
+                    {% if article.excerpt.size > 0 %}
+                      {{ article.excerpt }}
+                    {% else %}
+                      {{ article.content | strip_html }}
+                    {% endif %}
+                  </div>
+                </div>
+                <div class="grid__item two-fifths text-right">
+                  {% if article.metafields.c_f.website_link %}
+                    <a class="team-icons__link" href="{{ article.metafields.c_f.website_link | escape }}" target="_blank" title="{{ article.title }}'s Website">
+                      {% include 'icon-link' %}
+                    </a>
+                  {% endif %}
+                  {% if settings.article.metafields.c_f.facebook_link %}
+                    <a class="team-icons__link" href="{{ article.metafields.c_f.facebook_link | escape }}" target="_blank" title="{{ article.title }}'s Facebook">
+                      {% include 'icon-facebook' %}
+                    </a>
+                  {% endif %}
+                  {% if article.metafields.c_f.instagram_link %}
+                    <a class="team-icons__link" href="{{ article.metafields.c_f.instagram_link | escape }}" target="_blank" title="{{ article.title }}'s Instagram">
+                      {% include 'icon-instagram' %}
+                    </a>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      {% endfor %}
+    </div>
+
+  {% endunless %}
+
+</div>
